@@ -91,5 +91,3 @@ class BanAppealModal(Modal):
             content="**• Ban Appeal successfully made and sent to the Staff, please, be patient now.**", ephemeral=True)
 
         await self.cog.send_appeal_webhook(member=member, content=f"<@&{cosmos_role_id}>, {member.mention}", embed=embed)
-        # Saves in the database
-        # await self.cog.insert_application(app.id, member.id, 'ban_appeal')
