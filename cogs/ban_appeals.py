@@ -5,6 +5,8 @@ from discord.ext import commands
 from typing import List
 import os
 
+from extra.modals import BanAppealModal
+
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
 
 class BanAppeals(commands.Cog):
@@ -25,10 +27,10 @@ class BanAppeals(commands.Cog):
     async def _appeal_slash_command(self, ctx: discord.ApplicationContext) -> None:
         """ Makes a Ban Appeal. """
 
-        await ctx.defer(ephemeral=True)
         member: discord.Member = ctx.author
 
-        await ctx.respond(f"**Here's your `Ban Appeal`, {member.mention}:**")
+        await ctx.send_modal(BanAppealModal(self.client))
+        # await ctx.respond(f"**Here's your `Ban Appeal`, {member.mention}:**")
 
 def setup(client: commands.Bot) -> None:
     """ Cog's setup function. """
