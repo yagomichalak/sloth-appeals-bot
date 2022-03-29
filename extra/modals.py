@@ -1,8 +1,11 @@
 import discord
 from discord.ui import InputText, Modal
 from discord.ext import commands
+
 from .prompt.menu import ConfirmButton
-import asyncio
+import os
+
+cosmos_role_id: int = int(os.getenv('COSMOS_ROLE_ID'))
 
 class BanAppealModal(Modal):
     """ Class for the Ban Appeal application. """
@@ -87,10 +90,6 @@ class BanAppealModal(Modal):
         await confirm_view.interaction.followup.send(
             content="**• Ban Appeal successfully made and sent to the Staff, please, be patient now.**", ephemeral=True)
 
-        # moderator_app_channel = await self.client.fetch_channel(self.cog.ban_appeal_channel_id)
-        # cosmos_role = discord.utils.get(moderator_app_channel.guild.roles, id=self.cog.cosmos_role_id)
-        # app = await moderator_app_channel.send(content=f"{cosmos_role.mention}, {member.mention}", embed=embed)
-        # await app.add_reaction('✅')
-        # await app.add_reaction('❌')
+        await self.cog.send_appeal_webhook(member=member, content=f"<@&{cosmos_role_id}>, {member.mention}", embed=embed)
         # Saves in the database
         # await self.cog.insert_application(app.id, member.id, 'ban_appeal')

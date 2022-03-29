@@ -1,13 +1,15 @@
 import discord
-from discord import slash_command, option
+from discord import slash_command, option, Webhook
 from discord.ext import commands
 
 from typing import List
 import os
+import aiohttp
 
 from extra.modals import BanAppealModal
 
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
+webhook_url: str = os.getenv('WEBHOOK_URL')
 
 class BanAppeals(commands.Cog):
     """ Category for managing Ban Appeals. """
@@ -30,6 +32,20 @@ class BanAppeals(commands.Cog):
         member: discord.Member = ctx.author
 
         await ctx.send_modal(BanAppealModal(self.client))
+
+    async def send_appeal_webhook(self, member: discord.Member, content: str, embed: discord.Embed) -> None:
+        """ Sends the Ban Appeal's webhook message to Staff, in The Language Sloth server.
+        :param member: The member who made the Ban Appeal.
+        :param content: The content of the message.
+        :param embed: The embed of the message. """
+
+
+        async with aiohttp.ClientSession() as session:
+            webhook = Webhook.from_url(webhook_url, session=session)
+            await webhook.send(
+                content=content, embeds=[embed], username=member.display_name, avatar_url=member.display_avatar)
+            print(f"• Ban Appeal sent for {member}.")
+
 
 """ To-do List 
 ----------------------------
