@@ -30,7 +30,15 @@ class BanAppeals(commands.Cog):
         member: discord.Member = ctx.author
 
         await ctx.send_modal(BanAppealModal(self.client))
-        # await ctx.respond(f"**Here's your `Ban Appeal`, {member.mention}:**")
+
+""" To-do List 
+----------------------------
+    ban_appeal_channel_id
+    cosmos_role_id
+    insert_application()
+    cache =
+----------------------------
+"""
 
 def setup(client: commands.Bot) -> None:
     """ Cog's setup function. """
