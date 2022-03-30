@@ -36,7 +36,7 @@ class BanAppealModal(Modal):
             InputText(
                 label="I plead.",
                 placeholder="Guilty. (I did what I am being accused of.\nNot Guilty. (I did NOT do what I am being accused of.)", 
-                style=discord.InputTextStyle.short
+                style=discord.InputTextStyle.paragraph
             )
         )
         self.add_item(
@@ -48,9 +48,9 @@ class BanAppealModal(Modal):
         )
         self.add_item(
             InputText(
-                label="Country of Origin and Gender",# What's your motivation? ",
+                label="Country of Origin and Gender",
                 placeholder="Tell us where you are originated from, and your gender/pronouns etc.",
-                style=discord.InputTextStyle.short, 
+                style=discord.InputTextStyle.paragraph
             )
         )
 

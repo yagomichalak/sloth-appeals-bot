@@ -7,6 +7,7 @@ import os
 import aiohttp
 
 from extra.modals import BanAppealModal
+from mysqldb import the_database
 
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
 webhook_url: str = os.getenv('WEBHOOK_URL')
@@ -53,14 +54,21 @@ class BanAppeals(commands.Cog):
             await self.insert_ban_appeal(msg.id, member.id, 'ban_appeal')
 
     async def insert_ban_appeal(self, message_id: int, user_id: int, label: str = "ban_appeal") -> None:
-        """ Inserts a Ban Appeal into the database. """
+        """ Inserts a Ban Appeal into the database.
+        :param message_id: The appeal's message ID.
+        :param user_id: The appealer's ID.
+        :param label: The label. [Default = ban_appeal] """
 
-        pass
+        mycursor, db = await the_database()
+        await mycursor.execute("""
+            INSERT INTO Applications (message_id, applicant_id, application_type)
+            VALUES (%s, %s, %s)""", (message_id, user_id, label)
+        )
+        await db.commit()
+        await mycursor.close()
 
 """ To-do List 
 ----------------------------
-    ApplicationDatabase [Class]
-    insert_application [Method]
     cache [Attribute]
 ----------------------------
 """
