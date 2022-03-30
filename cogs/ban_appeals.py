@@ -2,7 +2,7 @@ import discord
 from discord import slash_command, option, Webhook
 from discord.ext import commands
 
-from typing import List
+from typing import List, Dict
 import os
 import aiohttp
 
@@ -19,6 +19,7 @@ class BanAppeals(commands.Cog):
         """ Class init method. """
 
         self.client = client
+        self.cache: Dict[int, int] = {}
 
     # /// Events ///
     @commands.Cog.listener()
@@ -32,8 +33,6 @@ class BanAppeals(commands.Cog):
     async def _appeal_slash_command(self, ctx: discord.ApplicationContext) -> None:
         """ Makes a Ban Appeal. """
 
-        member: discord.Member = ctx.author
-
         await ctx.send_modal(BanAppealModal(self.client))
 
     # /// Methods ///
@@ -42,7 +41,6 @@ class BanAppeals(commands.Cog):
         :param member: The member who made the Ban Appeal.
         :param content: The content of the message.
         :param embed: The embed of the message. """
-
 
         async with aiohttp.ClientSession() as session:
             webhook = Webhook.from_url(webhook_url, session=session)

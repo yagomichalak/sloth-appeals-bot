@@ -66,11 +66,11 @@ class BanAppealModal(Modal):
         )
 
         embed.set_thumbnail(url=member.display_avatar)
-        embed.add_field(name="Question 1", value=self.children[0].value, inline=False)
-        embed.add_field(name="Question 2", value=self.children[1].value, inline=False)
-        embed.add_field(name="Question 3", value=self.children[2].value, inline=False)
-        embed.add_field(name="Question 4", value=self.children[3].value, inline=False)
-        embed.add_field(name="Question 5", value=self.children[4].value, inline=False)
+        embed.add_field(name="Ban Reason", value=self.children[0].value, inline=False)
+        embed.add_field(name="Ban Reason Elaboration", value=self.children[1].value, inline=False)
+        embed.add_field(name="Guilty?", value=self.children[2].value, inline=False)
+        embed.add_field(name="Additional Notes", value=self.children[3].value, inline=False)
+        embed.add_field(name="Country of Origin and Gender", value=self.children[4].value, inline=False)
 
         confirm_view = ConfirmButton(member, timeout=60)
 
@@ -91,3 +91,4 @@ class BanAppealModal(Modal):
             content="**• Ban Appeal successfully made and sent to the Staff, please, be patient now.**", ephemeral=True)
 
         await self.cog.send_appeal_webhook(member=member, content=f"<@&{cosmos_role_id}>, {member.mention}", embed=embed)
+        
