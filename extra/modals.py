@@ -3,6 +3,7 @@ from discord.ui import InputText, Modal
 from discord.ext import commands
 
 from .prompt.menu import ConfirmButton
+from . import utils
 import os
 
 cosmos_role_id: int = int(os.getenv('COSMOS_ROLE_ID'))
@@ -89,6 +90,5 @@ class BanAppealModal(Modal):
         # Confirmed
         await confirm_view.interaction.followup.send(
             content="**• Ban Appeal successfully made and sent to the Staff, please, be patient now.**", ephemeral=True)
-
+        self.cog.cache[member.id] = await utils.get_timestamp()
         await self.cog.send_appeal_webhook(member=member, content=f"<@&{cosmos_role_id}>, {member.mention}", embed=embed)
-        

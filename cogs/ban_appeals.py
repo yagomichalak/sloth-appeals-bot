@@ -2,12 +2,13 @@ import discord
 from discord import slash_command, option, Webhook
 from discord.ext import commands
 
-from typing import List, Dict
 import os
 import aiohttp
-
-from extra.modals import BanAppealModal
+from typing import List, Dict
 from mysqldb import the_database
+
+from extra import utils
+from extra.modals import BanAppealModal
 
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
 webhook_url: str = os.getenv('WEBHOOK_URL')
@@ -20,6 +21,7 @@ class BanAppeals(commands.Cog):
 
         self.client = client
         self.cache: Dict[int, int] = {}
+        self.appeal_cooldown: int = 3600 # In seconds
 
     # /// Events ///
     @commands.Cog.listener()
@@ -32,6 +34,16 @@ class BanAppeals(commands.Cog):
     @slash_command(name="appeal", guild_ids=guild_ids)
     async def _appeal_slash_command(self, ctx: discord.ApplicationContext) -> None:
         """ Makes a Ban Appeal. """
+
+        member = ctx.author
+
+        # Checks cooldown for making a Ban Appeal (1 hourt)
+        time_now = await utils.get_timestamp()
+        if member_ts := self.cache.get(member.id):
+            sub = time_now - member_ts
+            if sub <= self.appeal_cooldown:
+                return await ctx.respond(
+                    f"**You are on cooldown to make your Ban Appeal, try again in {(self.appeal_cooldown-sub)/60:.1f} minutes**", ephemeral=True)
 
         await ctx.send_modal(BanAppealModal(self.client))
 
