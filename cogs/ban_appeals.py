@@ -1,5 +1,5 @@
 import discord
-from discord import slash_command, option, Webhook
+from discord import slash_command, Webhook
 from discord.ext import commands
 
 import os
@@ -12,6 +12,7 @@ from extra.modals import BanAppealModal
 
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
 webhook_url: str = os.getenv('WEBHOOK_URL')
+slash_command_channel_id: int = int(os.getenv('SLASH_COMMAND_CHANNEL_ID'))
 
 class BanAppeals(commands.Cog):
     """ Category for managing Ban Appeals. """
@@ -29,6 +30,18 @@ class BanAppeals(commands.Cog):
         """ Tells when the cog is ready to go. """
 
         print('BanAppeals cog is ready!')
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        """ Checks whether people are sending messages in the channel where
+        they are only supposed to use Slash commands. """
+
+        if message.channel.id != slash_command_channel_id:
+            return
+
+        perms = message.channel.permissions_for(message.author)
+        if not perms.administrator:
+            await message.delete()
 
     # /// Commands ///
     @slash_command(name="appeal", guild_ids=guild_ids)
