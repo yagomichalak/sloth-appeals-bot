@@ -1,3 +1,4 @@
+from lib2to3.pgen2.token import BACKQUOTE
 import discord
 from discord import slash_command, Webhook
 from discord.ext import commands
@@ -8,6 +9,7 @@ from typing import List, Dict
 from mysqldb import the_database
 
 from extra import utils
+from extra.views import BanAppealsView
 from extra.modals import BanAppealModal
 
 guild_ids: List[int] = [int(os.getenv('SERVER_ID'))]
@@ -28,6 +30,8 @@ class BanAppeals(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self) -> None:
         """ Tells when the cog is ready to go. """
+
+        self.client.add_view(BanAppealsView(self.client))
 
         print('BanAppeals cog is ready!')
 
@@ -50,7 +54,7 @@ class BanAppeals(commands.Cog):
 
         member = ctx.author
 
-        # Checks cooldown for making a Ban Appeal (1 hourt)
+        # Checks cooldown for making a Ban Appeal (1 hour)
         time_now = await utils.get_timestamp()
         if member_ts := self.cache.get(member.id):
             sub = time_now - member_ts
@@ -59,6 +63,24 @@ class BanAppeals(commands.Cog):
                     f"**You are on cooldown to make your Ban Appeal, try again in {(self.appeal_cooldown-sub)/60:.1f} minutes**", ephemeral=True)
 
         await ctx.send_modal(BanAppealModal(self.client))
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def make_appeals_message(self, ctx) -> None:
+        """ Makes the appeal message. """
+
+        guild: discord.Guild = ctx.guild
+
+        embed: discord.Embed = discord.Embed(
+            title="**__Ban Appeals__**",
+            description="Click on the button below to start making your `Ban Appeal`.",
+            color=discord.Color.brand_red()
+        )
+        embed.set_image(url=guild.icon.url)
+        embed.set_author(name=guild.name)
+        embed.set_footer(text="Make your appeal!", icon_url=guild.icon.url)
+        ban_appeal_view: discord.ui.View = BanAppealsView(self.client)
+        await ctx.send(embed=embed, view=ban_appeal_view)
 
     # /// Methods ///
     async def send_appeal_webhook(self, member: discord.Member, content: str, embed: discord.Embed) -> None:
